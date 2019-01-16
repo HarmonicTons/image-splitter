@@ -18,7 +18,7 @@ class Line {
   }
 
   /**
-   * The slope of the line (undefined if vertical)
+   * @type {number|undefined} The slope of the line (undefined if vertical)
    */
   get slope() {
     if (this.point0.x < this.point1.x) {
@@ -31,7 +31,7 @@ class Line {
   }
 
   /**
-   * The y-intercept of the line (undefined if vertical)
+    * @type {number|undefined} The y-intercept of the line (undefined if vertical)
    */
   get offset() {
     if (this.slope !== undefined) {
@@ -55,13 +55,18 @@ class Line {
       }
       return closeTo(this.point0.x, point.x, threshold);
     }
+
     return this.isOnLine({ point, oob: true, threshold })
     && (
       (point.x >= this.point0.x && point.x <= this.point1.x)
     || (point.x >= this.point1.x && point.x <= this.point0.x)
+    || closeTo(point.x, this.point0.x, threshold)
+    || closeTo(point.x, this.point1.x, threshold)
     ) && (
       (point.y >= this.point0.y && point.y <= this.point1.y)
     || (point.y >= this.point1.y && point.y <= this.point0.y)
+    || closeTo(point.y, this.point0.y, threshold)
+    || closeTo(point.y, this.point1.y, threshold)
     );
   }
 
@@ -75,7 +80,7 @@ class Line {
    */
   static intersection({ line1, line2, oob = false }) {
     if (oob) {
-      if (line1.slope && line2.slope) {
+      if (line1.slope !== undefined && line2.slope !== undefined) {
         if (line1.slope === line2.slope) {
           return undefined;
         }
@@ -83,12 +88,12 @@ class Line {
         const y = line1.slope * x + line1.offset;
         return new Point({ x, y });
       }
-      if (line1.slope) {
+      if (line1.slope !== undefined) {
         const { x } = line2.point0;
         const y = line1.slope * x + line1.offset;
         return new Point({ x, y });
       }
-      if (line2.slope) {
+      if (line2.slope !== undefined) {
         const { x } = line1.point0;
         const y = line2.slope * x + line2.offset;
         return new Point({ x, y });
