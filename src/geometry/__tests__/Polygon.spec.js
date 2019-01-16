@@ -120,15 +120,15 @@ describe('isInsidePolygon', () => {
     expect(p.isInsidePolygon({ point })).toBe(true);
   });
 
-  it('should return true if a point is a corner of the Polygon', () => {
+  it('should return false if a point is outside the Polygon, the control line passing by one corner', () => {
     const points = [
       new Point({ x: 1, y: 1 }),
       new Point({ x: 3, y: 4 }),
       new Point({ x: 6, y: 2 }),
     ];
     const p = new Polygon({ points });
-    const point = new Point({ x: 6, y: 2 });
-    expect(p.isInsidePolygon({ point })).toBe(true);
+    const point = new Point({ x: 1, y: 4 });
+    expect(p.isInsidePolygon({ point })).toBe(false);
   });
 
   it('should return true if a point is inside a complex Polygon', () => {

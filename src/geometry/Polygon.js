@@ -69,17 +69,28 @@ class Polygon {
     // the point is inside the polygon if a line from this point
     // intersects the sides of the polygon an odd number of time
     const line = new Line({ point0: point, point1: new Point({ x: this.xMax, y: point.y }) });
-    const intersections = this.sides.map(side => Line.intersection({
-      line1: line,
-      line2: side,
-      oob: false,
+    const intersectionsBySide = this.sides.map(side => ({
+      intersection: Line.intersection({
+        line1: line,
+        line2: side,
+        oob: false,
+      }),
+      side,
     }));
-    const intersectionsDefined = intersections.filter(i => i !== undefined);
-    const intersectionsUniq = _.uniqWith(intersectionsDefined, (i1, i2) => Point.areEquals({
-      point1: i1,
-      point2: i2,
-    }));
-    const nbOfIntersections = intersectionsUniq.length;
+
+    // keep only the intersection where the side is under the control-line
+    const intersections = intersectionsBySide.filter(ibs => ibs.intersection !== undefined
+      && (
+        (
+          !Point.areEquals({ point1: ibs.side.point0, point2: ibs.intersection })
+      && ibs.side.point0.y < ibs.intersection.y
+        ) || (
+          !Point.areEquals({ point1: ibs.side.point1, point2: ibs.intersection })
+        && ibs.side.point1.y < ibs.intersection.y
+        )
+      )).map(ibs => ibs.intersections);
+
+    const nbOfIntersections = intersections.length;
     return nbOfIntersections % 2 !== 0;
   }
 }
